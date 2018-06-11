@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="SentenceParserSuite">
+	<test thread-count="5" name="WordLengthTest">
+		<classes>
+			<class name="com.shotkin.WordLengthTest">
+				<methods>
+					<include name="nullSentence" />
+					<include name="emptySentence" />
+					<include name="oneWordSentence" />
+					<include name="sentenceWithMultipleLongestWords" />
+					<include name="multiwordSentenceWithOneLongestWord" />
+					<include name="longestWordIsPunctuated" />
+					<include name="longestWordIsApostrephized" />
+					<include name="longestWordIsHyphenated" />
+				</methods>
+			</class>
+		</classes>
+	</test> <!-- WordLengthTest -->
+</suite> <!-- SentenceParserSuite -->
