@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.testng.Assert.assertFalse;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
@@ -13,6 +15,9 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 /**
@@ -21,55 +26,23 @@ import org.testng.annotations.Test;
  */
 public class WordLengthTest {
 
-	private final Logger log = LogManager.getLogger(getClass());
+	private static final Logger log = LogManager.getLogger(WordLengthTest.class);
+	private static String workbookPath = "TestData.xlsx";
+	private static String sheetName = "WordLength";
 
-	@Test
-	public void nullSentence() {
-		log.info("TESTING a null sentence.");
-		Sentence sentence = new Sentence(null);
-		Optional<Entry<Integer, List<String>>> optional = sentence.getLongestWords();
-		assertFalse(optional.isPresent(), "getLongestWords() returned a longest word for a null Sentence.");
-		log.info("\tConfirmed that no longest word was returned.");
-	}
-
-	@Test
-	public void emptySentence() {
-		log.info("TESTING an empty sentence.");
-		Sentence sentence = new Sentence("");
-		Optional<Entry<Integer, List<String>>> optional = sentence.getLongestWords();
-		assertFalse(optional.isPresent(), "getLongestWords() returned a longest word for an empty Sentence.");
-		log.info("\tConfirmed that no longest word was returned.");
-	}
-
-	@Test
-	public void oneWordSentence() {
-		testGetLongestWords("Goose", 5, "Goose");
-	}
-
-	@Test
-	public void sentenceWithMultipleLongestWords() {
-		testGetLongestWords("Hey diddle diddle the cat and the fiddle", 6, "diddle", "diddle", "fiddle");
-	}
-
-	@Test
-	public void multiwordSentenceWithOneLongestWord() {
-		testGetLongestWords("The cow jumped over the moon", 6, "jumped");
-	}
-
-	@Test
-	public void longestWordIsPunctuated() {
-		testGetLongestWords("To be, or not to be - that is the question!", 8, "question");
-	}
-
-	@Test
-	public void longestWordIsApostrephized() {
-		testGetLongestWords("Shouldn't the longest word in this example have a length of nine?", 8, "Shouldnt");
-	}
-
-	@Test
-	public void longestWordIsHyphenated() {
-		testGetLongestWords("Shouldn't the longest word in this example have a properly-hyphenated length of nineteen?",
-				18, "properlyhyphenated");
+	@DataProvider
+	public static Object[][] testSentences() throws InvalidFormatException, IOException, URISyntaxException {
+		Object[][] data;
+		try (ExcelSheet sheet = new ExcelSheet(workbookPath, sheetName)) {
+			data = new Object[sheet.getLastRowNum()][3];
+			int currentRow = 0;
+			for (XSSFRow row : sheet.getRows()) {
+				data[currentRow][0] = row.getCell(0).getStringCellValue();
+				data[currentRow][1] = (int) row.getCell(1).getNumericCellValue();
+				data[currentRow++][2] = row.getCell(2).getStringCellValue().split("\\s+");
+			}
+		}
+		return data;
 	}
 
 	/**
@@ -84,6 +57,7 @@ public class WordLengthTest {
 	 *            Sentence object constructed using sentenceText. (The value of the entry should contain a List of the
 	 *            longest word(s) in sentenceText).
 	 */
+	@Test(dataProvider = "testSentences")
 	private void testGetLongestWords(String sentenceText, Integer expectedWordLength, String... expectedLongestWords) {
 		if (sentenceText == null || sentenceText.isEmpty())
 			throw new IllegalArgumentException("Cannot pass a null or empty sentenceText to testGetLongestWords()");
@@ -109,5 +83,31 @@ public class WordLengthTest {
 			log.error("\n\t" + e.getLocalizedMessage());
 			throw e;
 		}
+	}
+
+	@DataProvider
+	public static Object[][] emptyNull() {
+		Object[][] data = new Object[2][2];
+		data[0][0] = "";
+		data[0][1] = "Testing an empty String";
+		data[1][0] = null;
+		data[1][1] = "Testing a null String";
+		return data;
+	}
+
+	/**
+	 * Confirms that an empty or null string does not return a longest word
+	 * 
+	 * @param string
+	 *            an empty or null String
+	 * @param testDescription
+	 */
+	@Test(dataProvider = "emptyNull")
+	public void nonSentence(String string, String testDescription) {
+		log.info(testDescription);
+		Sentence sentence = new Sentence(string);
+		Optional<Entry<Integer, List<String>>> optional = sentence.getLongestWords();
+		assertFalse(optional.isPresent(), "getLongestWords() returned a longest word for a non-sentence.");
+		log.info("\tConfirmed that no longest word was returned.");
 	}
 };

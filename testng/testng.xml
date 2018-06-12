@@ -5,14 +5,8 @@
 		<classes>
 			<class name="com.shotkin.WordLengthTest">
 				<methods>
-					<include name="nullSentence" />
-					<include name="emptySentence" />
-					<include name="oneWordSentence" />
-					<include name="sentenceWithMultipleLongestWords" />
-					<include name="multiwordSentenceWithOneLongestWord" />
-					<include name="longestWordIsPunctuated" />
-					<include name="longestWordIsApostrephized" />
-					<include name="longestWordIsHyphenated" />
+					<include name="nonSentence" />
+					<include name="testGetLongestWords" />
 				</methods>
 			</class>
 		</classes>

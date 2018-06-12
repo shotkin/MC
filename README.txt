@@ -10,3 +10,4 @@ EXECUTING THE TESTS
 * You can execute the test cases in WordLengthTest.java by running testng/testng.xml.
 * The required dependencies are listed in the pom file
 * Test output will be output to the console as well as to a log file in the directory logs. A unique log file will be created for each test run.
+* You can add additional test cases to src/test/resources/TestData.xlsx
