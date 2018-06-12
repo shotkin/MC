@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -25,7 +24,8 @@ public class ExcelSheet implements AutoCloseable {
 
 	/**
 	 * 
-	 * @param workbook
+	 * @param workbookPath
+	 *            from src/test/resources to workbook file (including the filename and extension)
 	 * @param sheetName
 	 * @throws IOException
 	 * @throws InvalidFormatException
@@ -48,17 +48,6 @@ public class ExcelSheet implements AutoCloseable {
 
 	public int getLastRowNum() {
 		return excelSheet.getLastRowNum();
-	}
-
-	/**
-	 * 
-	 * @param rowNum
-	 * @param colNum
-	 * @return
-	 */
-	public String getString(int rowNum, int colNum) {
-		XSSFCell cell = excelSheet.getRow(rowNum).getCell(colNum);
-		return cell.getStringCellValue();
 	}
 
 	/* (non-Javadoc)
