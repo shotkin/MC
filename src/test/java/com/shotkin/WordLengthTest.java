@@ -33,32 +33,35 @@ public class WordLengthTest {
 	@DataProvider
 	public static Object[][] testSentences() throws InvalidFormatException, IOException, URISyntaxException {
 		Object[][] data;
-		try (ExcelSheet sheet = new ExcelSheet(workbookPath, sheetName)) {
-			data = new Object[sheet.getLastRowNum()][3];
+		try (ExcelSheet workbook = new ExcelSheet(workbookPath)) {
+			List<XSSFRow> rows = workbook.getRows(sheetName);
+			data = new Object[rows.size()][4];
 			int currentRow = 0;
-			for (XSSFRow row : sheet.getRows()) {
-				data[currentRow][0] = row.getCell(0).getStringCellValue();
-				data[currentRow][1] = (int) row.getCell(1).getNumericCellValue();
-				data[currentRow++][2] = row.getCell(2).getStringCellValue().split("\\s+");
+			for (XSSFRow row : rows) {
+				data[currentRow][0] = row.getCell(0).getStringCellValue(); // test description
+				data[currentRow][1] = row.getCell(1).getStringCellValue(); // sentence text
+				data[currentRow][2] = (int) row.getCell(2).getNumericCellValue(); // expected word length
+				data[currentRow++][3] = row.getCell(3).getStringCellValue().split("\\s+"); // expected longest words
 			}
 		}
 		return data;
 	}
 
 	/**
-	 * 
+	 * @param testDescription
 	 * @param sentenceText
 	 *            The text of the sentence to be tested. Cannot be null or empty.
 	 * @param expectedWordLength
-	 *            The expected key of the entry returned by calling getLongestWords() on a Sentence object constructed
-	 *            using sentenceText. (The key of the entry represents the word length).
+	 *            The expected key of the {@link Entry} returned by calling {@link Sentence#getLongestWords()} on a
+	 *            Sentence object constructed using sentenceText. (The key of that Entry represents the word length).
 	 * @param expectedLongestWords
-	 *            The expected Strings contained in the value of the entry returned by calling getLongestWords() on a
-	 *            Sentence object constructed using sentenceText. (The value of the entry should contain a List of the
-	 *            longest word(s) in sentenceText).
+	 *            The expected Strings contained in the value of the {@link Entry} returned by calling
+	 *            {@link Sentence#getLongestWords()} on a Sentence object constructed using sentenceText. (The value of
+	 *            that Entry should contain a List of the longest word(s) in sentenceText).
 	 */
 	@Test(dataProvider = "testSentences")
-	private void testGetLongestWords(String sentenceText, Integer expectedWordLength, String... expectedLongestWords) {
+	private void testGetLongestWords(String testDescription, String sentenceText, Integer expectedWordLength,
+			String... expectedLongestWords) {
 		if (sentenceText == null || sentenceText.isEmpty())
 			throw new IllegalArgumentException("Cannot pass a null or empty sentenceText to testGetLongestWords()");
 		Sentence sentence = new Sentence(sentenceText);
@@ -67,7 +70,7 @@ public class WordLengthTest {
 		Integer actualWordLength = entry.getKey();
 		List<String> actualLongestWordList = entry.getValue();
 		List<String> expectedLongestWordList = Arrays.asList(expectedLongestWords);
-		log.info(StringUtils.join("\n\tTEST SENTENCE: ", sentenceText,
+		log.info(StringUtils.join("\n\tTEST DESCRIPTION: ", testDescription, "\n\t\tTest Sentence: ", sentenceText,
 				"\n\t\tLength of Longest Word (Expected / Actual): ", expectedWordLength, " / ", actualWordLength,
 				"\n\t\tLongest Word(s) (Expected / Actual): ", Arrays.asList(expectedLongestWords), " / ",
 				Arrays.asList(actualLongestWordList)));
@@ -96,7 +99,8 @@ public class WordLengthTest {
 	}
 
 	/**
-	 * Confirms that an empty or null string does not return a longest word
+	 * Confirms that {@link Sentence#getLongestWords()} does not return a longest word when called on a Sentence
+	 * constructed using an empty or null string
 	 * 
 	 * @param string
 	 *            an empty or null String
