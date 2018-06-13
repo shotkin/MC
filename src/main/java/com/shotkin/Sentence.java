@@ -40,7 +40,7 @@ public class Sentence {
 	 */
 	public Sentence(String sentence) {
 		if (sentence == null) sentence = "";
-		this.sentence = sentence.replaceAll("\\p{P}", ""); // strip out all punctuation
+		this.sentence = sentence.replaceAll("\\p{P}$", ""); // strip out all punctuation at end of word
 	}
 
 	/**

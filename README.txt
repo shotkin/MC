@@ -3,8 +3,7 @@ OVERVIEW
 
 FUNTIONALITY
 * Multiple occurences of a longest word will be returned as separate instances.
-* All punctuation is stripped from the sentence before calculating the word lengths.
-* A possible enhancement to this class would be to include apostrophes and hyphens in the character count for words which contain them.
+* Any punctuation at the end of a word is not considered to be part of that word.
 
 EXECUTING THE TESTS
 * You can execute the test cases in WordLengthTest.java by running testng/testng.xml.

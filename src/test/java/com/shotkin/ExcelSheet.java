@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.shotkin;
 
 import java.io.File;
