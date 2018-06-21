@@ -20,8 +20,8 @@ import java.util.stream.Stream;
 public class Sentence {
 
 	/**
-	 * The sentence passed into the constructor of this class, stripped of all punctuation (or an empty String if
-	 * {@link #sentence} was null.)
+	 * The sentence passed into the constructor of this class, stripped of all punctuation (or an empty String if that
+	 * sentence was null.)
 	 */
 	private final String sentence;
 	/**
@@ -34,13 +34,15 @@ public class Sentence {
 	 */
 	private static Comparator<? super Entry<Integer, List<String>>> reverseOrder =
 			Map.Entry.comparingByKey(Comparator.reverseOrder());
+	private static String punctuationAtEndOfString = "\\p{Punct}$";
+	private static String whiteSpace = "\\s+";
 
 	/**
 	 * @param sentence
 	 */
 	public Sentence(String sentence) {
 		if (sentence == null) sentence = "";
-		this.sentence = sentence.replaceAll("\\p{P}$", ""); // strip out all punctuation at end of word
+		this.sentence = sentence.replaceAll(punctuationAtEndOfString, "");
 	}
 
 	/**
@@ -57,11 +59,12 @@ public class Sentence {
 	 */
 	private Stream<Entry<Integer, List<String>>> getWordLengthStream() {
 		if (wordLengthMap == null) {
-			String[] words = sentence.split("\\s+");
-			if (words.length == 1 && words[0] == "")
+			if (sentence.isEmpty())
 				wordLengthMap = new HashMap<Integer, List<String>>();
-			else
+			else {
+				String[] words = sentence.split(whiteSpace);
 				wordLengthMap = Arrays.stream(words).collect(Collectors.groupingBy(String::length));
+			}
 		}
 		return wordLengthMap.entrySet().stream();
 	}

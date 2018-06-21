@@ -53,7 +53,7 @@ public class ExcelSheet implements AutoCloseable {
 
 	/**
 	 * @param sheetName
-	 * @return sheet sheetName in {@link #workbook}
+	 * @return the sheet named sheetName in {@link #workbook}
 	 * @throws IOException
 	 *             if {@link #workbook} does not contain a sheet named sheetName
 	 */
